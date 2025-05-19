@@ -9,7 +9,7 @@ const TopBar = () => {
     return (
         <div className='bg-orangina text-white font-normal text-sm '>
 
-            <div className='container mx-auto flex justify-between items-center py-2 px-8 '>
+            <div className='container mx-auto flex justify-between items-center py-4 px-8 '>
                 {/**Social Media */}
                 <div className='hidden md:flex space-x-4 items-center'>
                     <a href="/brand" className='hover:text-gray-300'  > <TbBrandMeta className='h-5 w-5' /> </a>
