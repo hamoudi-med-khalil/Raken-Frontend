@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 const Footer = () => {
   return (
     <footer className="border-t-2 py-14">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-4">
+      <div className="container mx-auto text-center grid grid-cols-1 md:grid-cols-4 gap-8 px-4">
         {/* Newsletter */}
         <div>
           <h3 className="text-l text-gray-800 mb-4">Newsletter</h3>
@@ -93,7 +93,7 @@ const Footer = () => {
         {/* Follow section */}
         <div>
           <h3 className="text-l text-gray-800 mb-4">Follow Us</h3>
-          <div className="flex items-center space-x-4 mb-6">
+          <div className="flex items-center text-center justify-center space-x-4 mb-6">
             <a
               href="www.facebook.com"
               target="_blank"
