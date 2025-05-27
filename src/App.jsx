@@ -45,7 +45,6 @@ function App() {
     <Route path='products' element={<ProductManagement/>}/>
     <Route path='products/:id/edit' element={<EditProductPage/>}/>
     <Route path='orders' element={<OrderManagement/>}/>
-    {/** Admin layout */}  
     </Route>
    </Routes>
 
