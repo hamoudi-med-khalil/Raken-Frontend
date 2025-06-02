@@ -1,16 +1,20 @@
 import React, { useState } from "react";
-import {Link} from 'react-router-dom'
-import registerImage from "../assets/register.webp"
+import { Link } from "react-router-dom";
+import registerImage from "../assets/register.webp";
+import { registerUser } from "../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 const Register = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
 
-  const handleSubmit = (e) =>{
-    e.preventDefault()
-    console.log("User Registred :" , {name, email, password})
-  }
+  const dispatch = useDispatch();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(registerUser({ name, email, password }));
+  };
 
   return (
     <div className="container mx-auto w-full py-16 flex">
@@ -22,7 +26,7 @@ const Register = () => {
             <h2 className="text-2xl font-bold  mb-6">Hey there! 👋 </h2>
             <p className="mb-6">Enter your username and password to login</p>
           </div>
-           <div className="mb-4">
+          <div className="mb-4">
             <label htmlFor="name" className="block font-semibold mb-2">
               Name
             </label>
@@ -71,18 +75,23 @@ const Register = () => {
             Sign Up
           </button>
           <p className="mt-4 text-center text-sm ">
-            have an account?{'  '}
-            <Link to='/login' className='text-blue-500'>LogIn </Link>
+            have an account?{"  "}
+            <Link to="/login" className="text-blue-500">
+              LogIn{" "}
+            </Link>
           </p>
         </form>
       </div>
 
       {/* Right side */}
       <div className="hidden md:block w-1/2 bg-gray-500">
-      <div className="flex flex-col justify-center items-center">
-      <img src={registerImage} alt="loginImage" className="object-cover w-full h-[750px]" />
-      </div>
-
+        <div className="flex flex-col justify-center items-center">
+          <img
+            src={registerImage}
+            alt="loginImage"
+            className="object-cover w-full h-[750px]"
+          />
+        </div>
       </div>
     </div>
   );
