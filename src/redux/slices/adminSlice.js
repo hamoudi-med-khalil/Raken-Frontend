@@ -7,7 +7,7 @@ export const fetchUsers = createAsyncThunk("ADMIN/FETCHuSERS", async () => {
     const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/admin/users`,
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("userToken")}`
+                Authorization: `Bearer ${JSON.parse(localStorage.getItem("userToken"))}`
             }
         }
     )
@@ -21,7 +21,7 @@ export const addUser = createAsyncThunk("ADMIN/addUser", async (userData, { reje
         const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/admin/users`, userData,
             {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("userToken")}`
+                    Authorization: `Bearer ${JSON.parse(localStorage.getItem("userToken"))}`
                 }
             }
         )
@@ -40,12 +40,14 @@ export const updateUser = createAsyncThunk("ADMIN/updateUser", async ({ id, name
     const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${id}`, { name, email, role },
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("userToken")}`
+                Authorization: `Bearer ${JSON.parse(localStorage.getItem("userToken"))}`,
+                        "Content-Type": "application/json", // 👈 essentiel !
+
             },
 
         }
     )
-    return response.data
+    return response.data.user
 })
 
 // Delete a user(admin only)
@@ -55,7 +57,7 @@ export const deleteUser = createAsyncThunk("ADMIN/deleteUser", async (id) => {
     const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/admin/users/${id}`, { name, email, role },
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("userToken")}`
+                Authorization: `Bearer ${JSON.parse(localStorage.getItem("userToken"))}`
             },
 
         }
@@ -101,15 +103,16 @@ const adminSlice = createSlice({
         })  
         .addCase(addUser.pending, (state)=>{
             state.loading = true;
+            state.error =null;
+
+        })        
+        .addCase(addUser.fulfilled, (state, action)=>{
+            state.loading = false;
             state.users.push(action.payload.user)
         })        
-        .addCase(addUser.fulfilled, (state, action)=>{
+        .addCase(addUser.rejected, (state, action)=>{
             state.loading = false;
-            state.error =null;
-        })        
-        .addCase(addUser.fulfilled, (state, action)=>{
-            state.loading = false;
-            state.error = action.payload;
+            state.error = action.payload.message
         })        
     }
 })

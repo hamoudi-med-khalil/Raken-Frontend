@@ -1,28 +1,34 @@
-import React, { useState } from "react";
+import React, { use, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { createCheckout } from "../../redux/slices/checkOutSlice";
 
-const cart = {
-  products: [
-    {
-      name: "Stylish Jacket",
-      size: "M",
-      color: "Black",
-      price: 120,
-      image: "https://picsum.photos/150?random=1",
-    },
-    {
-      name: "Casual Sneakers",
-      size: "42",
-      color: "White",
-      price: 75,
-      image: "https://picsum.photos/150?random=2",
-    },
-  ],
-  totalPrice: 195,
-};
+// const cart = {
+//   products: [
+//     {
+//       name: "Stylish Jacket",
+//       size: "M",
+//       color: "Black",
+//       price: 120,
+//       image: "https://picsum.photos/150?random=1",
+//     },
+//     {
+//       name: "Casual Sneakers",
+//       size: "42",
+//       color: "White",
+//       price: 75,
+//       image: "https://picsum.photos/150?random=2",
+//     },
+//   ],
+//   totalPrice: 195,
+// };
 
 const CheckOut = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { cart, loading, error } = useSelector((state) => state.cart);
+  const { user } = useSelector((state) => state.auth);
+
   const [checkOutId, setCheckOutId] = useState(null);
   const [shippingAddress, setShippingAddress] = useState({
     firstName: "",
@@ -34,10 +40,72 @@ const CheckOut = () => {
     phone: "",
   });
 
+  useEffect(() => {
+    if (!cart || !cart.products || cart.products.length === 0) {
+      navigate("/");
+    }
+  }, [cart, navigate]);
+
   const handelCreateCheckout = (e) => {
     e.preventDefault();
-    setCheckOutId(123);
+    if (cart && cart.products.length > 0) {
+      const response = dispatch(
+        createCheckout({
+          checkoutItem: cart.products,
+          shippingAddress,
+          PaymentMethod: "Paypal",
+          totalPrice: cart.totalPrice,
+        })
+      );
+      if (response.payload && response.payload._Id) {
+        setCheckOutId(response.payload._id);
+      }
+    }
   };
+  const handlePaymentSuccess = async (details) => {
+
+    try {
+      const response = await axios.put(
+        `${import.meta.env.VITE_BACKEND_URL}/api/checkout/pay`,
+        { paymentStatus: "paid", paymentDetails: details },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
+        }
+      );
+      if (response.status === 200) {
+        await handleFinalizeCheckout(checkOutId);
+      } else {
+        console.error(error);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+const handleFinalizeCheckout = async (checkOutId) =>{
+  try {
+    const response = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkOutId}/finalize`,    
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+          },
+        }
+      );
+       if (response.status === 200) {
+        navigate('/order-confirmation')
+      } else {
+        console.error(error);
+      }
+  } catch (error) {
+    console.error(error);
+    
+  }
+}
+  if(loading) return <p>Loading cart ...</p>
+  if(error) return <p>Error {error} ...</p>
+  if(!cart || !cart.products || cart.products.length === 0) return <p>Your Cart isEmpty ...</p>
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-7xl mx-auto py-10 px-6 tracking-tighter">
       {/* Left Section  */}

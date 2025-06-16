@@ -6,6 +6,7 @@ import {
   FiChevronsRight,
 } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import axios from 'axios'
 
 const NewArrivals = () => {
   const scrollRef = useRef(null);
@@ -13,104 +14,40 @@ const NewArrivals = () => {
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(false);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
-  const [scrollRight, setScrollRight] = useState(true);
+  // const [scrollRight, setScrollRight] = useState(true);
   const [canScrollRight, setCanScrollRight] = useState(false);
-  const newArrivals = [
-    {
-      _id: 1,
-      name: "Stylish Jacket",
-      price: 200,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=1",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: 2,
-      name: "Stylish Jacket",
-      price: 200,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=2",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: 3,
-      name: "Stylish Jacket",
-      price: 200,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=3",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: 4,
-      name: "Stylish Jacket",
-      price: 200,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=4",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: 5,
-      name: "Stylish Jacket",
-      price: 200,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=5",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: 6,
-      name: "Stylish Jacket",
-      price: 200,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=6",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-    {
-      _id: 7,
-      name: "Stylish Jacket",
-      price: 200,
-      images: [
-        {
-          url: "https://picsum.photos/500/500?random=7",
-          altText: "Stylish Jacket",
-        },
-      ],
-    },
-  ];
+  const [newArrivals, setNewArrivals] = useState([]);
 
-  const handleMouseDown = (e) =>{
-    setIsDragging(true)
-    setStartX(e.pageX - scrollRef.current.offsetLeft)
-    setScrollLeft(scrollRef.current.scrollLeft)
-  }
+  useEffect(() => {
+    const fetchNewArrival = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`
+        );
+        setNewArrivals(response.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchNewArrival()
+  }, []);
+  
+  const handleMouseDown = (e) => {
+    setIsDragging(true);
+    setStartX(e.pageX - scrollRef.current.offsetLeft);
+    setScrollLeft(scrollRef.current.scrollLeft);
+  };
 
-  const handleMouseMove = (e) =>{
-    if(!isDragging) return;
-    const x = e.pageX - scrollRef.current.offsetLeft
+  const handleMouseMove = (e) => {
+    if (!isDragging) return;
+    const x = e.pageX - scrollRef.current.offsetLeft;
     const walk = x - startX;
-    scrollRef.current.scrollLeft = scrollLeft - walk
-  }
+    scrollRef.current.scrollLeft = scrollLeft - walk;
+  };
 
-  const handleMouseUpOrLeave = (e) =>{
-    setIsDragging(false)
-  }
+  const handleMouseUpOrLeave = (e) => {
+    setIsDragging(false);
+  };
 
   const scroll = (direction) => {
     const scrollAmount = direction === "left" ? -300 : 300;
@@ -123,13 +60,12 @@ const NewArrivals = () => {
     const container = scrollRef.current;
     if (container) {
       const scrollLeft = container.scrollLeft;
-      const rightScrollable = container.scrollWidth > scrollLeft + container.clientWidth;
+      const rightScrollable =
+        container.scrollWidth > scrollLeft + container.clientWidth;
 
       setCanScrollLeft(scrollLeft > 0);
       setCanScrollRight(rightScrollable);
     }
-
-
   };
   useEffect(() => {
     const container = scrollRef.current;
@@ -137,9 +73,9 @@ const NewArrivals = () => {
     if (container) {
       container.addEventListener("scroll", updateScrollButtons);
       updateScrollButtons();
-      return () => container.removeEventListener("scroll", updateScrollButtons)
+      return () => container.removeEventListener("scroll", updateScrollButtons);
     }
-  }, []);
+  }, [newArrivals]);
 
   return (
     <section className="py-16 px-4 lg:px-0">

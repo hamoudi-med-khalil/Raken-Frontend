@@ -3,15 +3,17 @@ import axios from "axios";
 
 export const fetchUserOrders = createAsyncThunk("orders/fetchUserOrders",
     async (__dirname, { rejectWithValue }) => {
+
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/orders/my-ordes`,
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/orders/my-orders`,
                 {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("userToken")}`
+                Authorization: `Bearer ${JSON.parse(localStorage.getItem("userToken"))}`,
                     }
                 }
 
-            )
+            )  
+            
             return response.data
         } catch (error) {
             console.error(error);
@@ -27,7 +29,7 @@ export const fetchOrderById = createAsyncThunk("orders/fetchsingleorder", async(
         const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/orders/${orderId}`,
            {
              headers : {
-                Authorization : `Bearer ${localStorage.getItem("userToken")}`
+                Authorization: `Bearer ${JSON.parse(localStorage.getItem("userToken"))}`,
             }}
         )
         return response.data
@@ -50,14 +52,14 @@ const orderSlice = createSlice({
     extraReducers : (builder) => {
         builder
         .addCase(fetchUserOrders.pending , (state)=>{
-            state.loading = true,
+            state.loading = true;
             state.error = null;
         })
         .addCase(fetchUserOrders.fulfilled , (state, action)=>{
-            state.loading = false,
+            state.loading = false;
             state.orders = action.payload
         })
-        .addCase(fetchUserOrders.rtejected , (state, action)=>{
+        .addCase(fetchUserOrders.rejected , (state, action)=>{
             state.loading = false,
             state.error = action.payload.message
         })
@@ -69,7 +71,7 @@ const orderSlice = createSlice({
             state.loading = false,
             state.orderDetails = action.payload
         })
-        .addCase(fetchOrderById.rtejected , (state, action)=>{
+        .addCase(fetchOrderById.rejected , (state, action)=>{
             state.loading = false,
             state.error = action.payload.message
         })

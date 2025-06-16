@@ -38,10 +38,17 @@ export const fetchProductsByFilters = createAsyncThunk("products/fetchByFilters"
     }
 });
 
-// Async thunk to fetch asingle productby id
+// Async thunk to fetch asingle product by id
 
-export const fetchSingleProduct = createAsyncThunk("products/fetchSingleProduct", async (id) => {
-    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`)
+export const fetchSingleProduct = createAsyncThunk("products/fetchSingleProduct", async (productID) => {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/${productID}`)
+    return response.data
+})
+
+// Async thunk to fetch similar  products
+
+export const fetchSimilarProducts = createAsyncThunk("products/fetchSimilarProducts", async({id}) => {
+    const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/products/similar/${id}`)
     return response.data
 })
 
@@ -51,18 +58,13 @@ export const updateProduct = createAsyncThunk("products/updateProduct", async({ 
     const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`, productData,
         {
             headers: {
-                Authorization: `Bearer ${localStorage.getItem("userToken")}`
+                Authorization: `Bearer ${JSON.parse(localStorage.getItem("userToken"))}`
             }
         }
     )
     return response.data
 })
-// Async thunk to fetch similar  products
 
-export const fetchSimilarProducts = createAsyncThunk("products/fetchSimilarProducts", async(id) => {
-    const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`)
-    return response.data
-})
 
 const productsSlice =createSlice({
     name:"products",

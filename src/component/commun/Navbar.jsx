@@ -8,6 +8,7 @@ import SearchBar from "./SearchBar";
 import CartDrawer from "../layout/CartDrawer";
 import { useState } from "react";
 import { IoMdClose } from "react-icons/io";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const [cartDrawerOpen, setCartDrawerOpen] = useState(false);
@@ -19,6 +20,11 @@ const Navbar = () => {
   const toggleNavDrawer = () => {
     setNavDrawerOpen(!navDrawerOpen);
   };
+
+  const {cart} = useSelector((state) => state.cart)
+const cartItemCount = Array.isArray(cart?.products)
+  ? cart.products.reduce((total, product) => total + product.quantity, 0)
+  : 0;
   return (
     <>
       <nav className="container mx-auto flex items-center justify-between py-4 px-6 relative border-b border-gray-200 ">
@@ -30,16 +36,16 @@ const Navbar = () => {
         </div>
         {/* Navigation link center */}
         <div className="hidden md:flex space-x-6">
-          <Link to='/collections/all' className="text-gray-700 hover:text-black text-sm font-medium uppercase">
+          <Link to='/collections/all?gender=Men' className="text-gray-700 hover:text-black text-sm font-medium uppercase">
             Men
           </Link>
-          <Link className="text-gray-700 hover:text-black text-sm font-medium uppercase">
+          <Link to='/collections/all?gender=Women' className="text-gray-700 hover:text-black text-sm font-medium uppercase">
             Women
           </Link>
-          <Link className="text-gray-700 hover:text-black text-sm font-medium uppercase">
+          <Link to='/collections/all?category=Top Wear' className="text-gray-700 hover:text-black text-sm font-medium uppercase">
             Top Wear
           </Link>
-          <Link className="text-gray-700 hover:text-black text-sm font-medium uppercase">
+          <Link to='/collections/all?category=Bottom Wear' className="text-gray-700 hover:text-black text-sm font-medium uppercase">
             Bottom Wear
           </Link>
         </div>
@@ -51,9 +57,13 @@ const Navbar = () => {
           </Link>
           <button className="relative " onClick={toggleCartDrawer}>
             <HiOutlineShoppingBag className=" h-6 w-6 text-gray-700 hover:text-black" />
-            <span className="absolute -top-1 left-3 text-sm bg-red-700 text-white rounded-full px-2  h-5 w-5 flex justify-center ">
-              4
+           
+           {cartItemCount > 0 && (
+             <span className="absolute -top-1 left-3 text-sm bg-red-700 text-white rounded-full px-2  h-5 w-5 flex justify-center ">
+              {cartItemCount }
             </span>
+           )}
+          
           </button>
 
           {/* Search */}
@@ -86,16 +96,16 @@ const Navbar = () => {
         <div>
           <h2 className="text-lg font-semibold block p-4 mb-4">Menu</h2>
           <nav className="flex flex-col justify-center items-left space-y-6 p-4">
-            <Link to='/collections/all'  className="text-gray-700 hover:text-black text-sm font-medium uppercase" onClick={toggleNavDrawer}>
+            <Link to='/collections/all?gender=Men'  className="text-gray-700 hover:text-black text-sm font-medium uppercase" onClick={toggleNavDrawer}>
               Men
             </Link>
-            <Link to='#' className="text-gray-700 hover:text-black text-sm font-medium uppercase" onClick={toggleNavDrawer}>
+            <Link to='/collections/all?gender=Women' className="text-gray-700 hover:text-black text-sm font-medium uppercase" onClick={toggleNavDrawer}>
               Women
             </Link>
-            <Link to='#' className="text-gray-700 hover:text-black text-sm font-medium uppercase" onClick={toggleNavDrawer}>
+            <Link to='/collections/all?category=Top Wear' className="text-gray-700 hover:text-black text-sm font-medium uppercase" onClick={toggleNavDrawer}>
               Top Wear
             </Link>
-            <Link to='#' className="text-gray-700 hover:text-black text-sm font-medium uppercase" onClick={toggleNavDrawer}>
+            <Link to='/collections/all?category=Bottom Wear' className="text-gray-700 hover:text-black text-sm font-medium uppercase" onClick={toggleNavDrawer}>
               Bottom Wear
             </Link>
           </nav>

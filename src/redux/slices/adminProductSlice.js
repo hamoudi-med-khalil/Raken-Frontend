@@ -2,11 +2,11 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const API_URL = `${import.meta.env.VITE_BACKEND_URL}`
-const USER_TOKEN = `Bearer ${localStorage.getItem("userToken")}`
+const USER_TOKEN = `Bearer ${JSON.parse(localStorage.getItem("userToken")) }`
 
 // async thunk to fetch admin products
 export const fetchAdminProducts = createAsyncThunk("adminProduct/fetchAllProducts", async () => {
-    const response = axios.get(`${API_URL}/api/admin/products`,
+    const response = await axios.get(`${API_URL}/api/admin/products`,
         {
             headers: {
                 Authorization: USER_TOKEN
@@ -30,7 +30,7 @@ export const addProduct = createAsyncThunk("adminProduct/addProduct", async (pro
 })
 
 // Async function to update a product
-export const updateProduct = createAsyncThunk("adminProduct/addProduct", async ({ id, productData }) => {
+export const updateProduct = createAsyncThunk("adminProduct/updateProduct", async ({ id, productData }) => {
     const response = await axios.put(`${API_URL}/api/admin/products/${id}`, productData,
         {
             headers: {
@@ -41,9 +41,9 @@ export const updateProduct = createAsyncThunk("adminProduct/addProduct", async (
     return response.data
 })
 
-// Async function to update a product
+// Async function to delete a product
 export const deleteProduct = createAsyncThunk("adminProduct/deleteProduct", async (id) => {
-    const response = await axios.delete(`${API_URL}/api/admin/products/${id}`,
+    const response = await axios.delete(`${API_URL}/api/products/${id}`,
         {
             headers: {
                 Authorization: USER_TOKEN
@@ -68,6 +68,7 @@ const adminProductSlice = createSlice({
                 state.error = null
             })
             .addCase(fetchAdminProducts.fulfilled, (state, action) => {
+
                 state.loading = false;
                 state.products = action.payload
             })
@@ -112,7 +113,7 @@ const adminProductSlice = createSlice({
             })
             .addCase(deleteProduct.fulfilled, (state, action) => {
                 state.loading = false;
-                state.products.filter((product) => product.id !== action.payload)
+                state.products = state.products.filter((product) => product._id !== action.payload)
             })
             .addCase(deleteProduct.rejected, (state, action) => {
                 state.loading = false,
